@@ -6,15 +6,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-N  = len(np.load('x_short.npy')); print('N=',N)  #5000
-dx = np.diff(np.load('x_short.npy'))[0]#0.01
+N  = len(np.load('x.npy')); print('N=',N)  #5000
+dx = np.diff(np.load('x.npy'))[0]#0.01
 x  = np.linspace(0,N*dx,N)
 
 Nt = 500000
 dt = 0.001
 
 #INITIAL CONDITION
-u = np.load('Q_short.npy')#+ np.sin(x)*0.1
+u = np.load('Q.npy')
 
 def rhs(u):
     return np.gradient((1-3*u**2)/(1-u**2)*np.gradient(u))/dx**2 - np.gradient(np.gradient(np.gradient(np.gradient(u))))/dx**4
