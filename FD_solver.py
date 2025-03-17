@@ -50,6 +50,7 @@ M[-2,-3] += -1
 #np.set_printoptions(threshold=sys.maxsize)
 #print(M)
 
+#ONLY NEED TO COMPUTE INVERSE MATRIX ONCE
 ts = time.time()
 M_inv = np.linalg.inv(M)
 print('Inverting took ',time.time()-ts,' s')
@@ -83,4 +84,4 @@ for n in range(Nt):
    #PLOT RESULT
    if n % cadence ==0:
      print('<k>=',np.mean(u))
-     plt.clf(); plt.ylim(0.5,0.95); plt.plot(x,u); plt.xlabel('$x$'); plt.ylabel('$u$'); plt.pause(0.01)
+     plt.clf(); plt.ylim(min(u)-0.1,1); plt.plot(x,u); plt.xlabel('$x$'); plt.ylabel('$u$'); plt.pause(0.01)
