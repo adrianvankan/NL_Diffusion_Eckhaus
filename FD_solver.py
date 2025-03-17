@@ -16,8 +16,8 @@ dt = 0.001
 #INITIAL CONDITION
 u = np.load('Q.npy')
 
-def rhs(u):
-    return np.gradient((1-3*u**2)/(1-u**2)*np.gradient(u))/dx**2 - np.gradient(np.gradient(np.gradient(np.gradient(u))))/dx**4
+#def rhs(u):
+#    return np.gradient((1-3*u**2)/(1-u**2)*np.gradient(u))/dx**2 - np.gradient(np.gradient(np.gradient(np.gradient(u))))/dx**4
 
 #### Neumann BCs, slope A  @ x=0, slope  B at x=N*dx
 #### Dirichlet BCs, Q = k0 @ x=0, Q = k1   @  x=N*dx  
