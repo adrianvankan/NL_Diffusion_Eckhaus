@@ -19,10 +19,6 @@ u = np.load('Q_short.npy')#+ np.sin(x)*0.1
 def rhs(u):
     return np.gradient((1-3*u**2)/(1-u**2)*np.gradient(u))/dx**2 - np.gradient(np.gradient(np.gradient(np.gradient(u))))/dx**4
 
-tmp = rhs(u)
-tmp[abs(tmp)>0.01] = 0
-plt.plot(tmp); plt.show()
-
 #### Neumann BCs, slope A  @ x=0, slope  B at x=N*dx
 #### Dirichlet BCs, Q = k0 @ x=0, Q = k1   @  x=N*dx  
 A = 0
@@ -53,7 +49,7 @@ M[-2,-3] += -1
 #ONLY NEED TO COMPUTE INVERSE MATRIX ONCE
 ts = time.time()
 M_inv = np.linalg.inv(M)
-print('Inverting took ',time.time()-ts,' s')
+print('Inverting matrix took ',time.time()-ts,' s')
 
 #CADENCE FOR PLOTTING
 cadence = 1000
