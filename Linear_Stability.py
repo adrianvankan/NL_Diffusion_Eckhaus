@@ -71,13 +71,13 @@ eigenvalues, eigenvectors = linalg.eig(L)
 ind = where(real(eigenvalues)==max(real(eigenvalues)))[0]
 print('Finding eigenvalues/eigenvectors took',time.time()-ts,' s')
 
-plt.plot(real(eigenvalues),'x'); plt.plot(zeros(len(x))); #plt.ylim(-0.3,0.3)
+#PLOT EIGENVALUES
+plt.plot(real(eigenvalues),'x'); plt.plot(zeros(len(x))); plt.ylim(-100,100); plt.ylabel('Eigenvalue'); plt.xlabel('Index')
+
 plt.figure(); 
-for i in range(190,195):
+#PLOT EIGENFUNCTIONS OVER SOME RANGE OF INDICES
+for i in range(len(x)-10,len(x)-5):
     plt.plot(x,eigenvalues[i]*eigenvectors[:,i],'k--',zorder=100)
     plt.plot(x,L.dot(eigenvectors[:,i]),'-',label='i='+str(i),lw=3); 
 plt.legend()
-
-#plt.plot(x,L.dot(eigenvectors[:,ind])); plt.show()
-
-plt.show()
+plt.xlabel('$x$'); plt.ylabel('Eigenfunction'); plt.show()
