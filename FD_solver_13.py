@@ -11,8 +11,8 @@ import scipy.sparse.linalg
 load_ic = False #switch to True to load saved ic
 
 if load_ic:
-  N  = len(np.load('x.npy')); print('N=',N)  #5000
-  dx = np.diff(np.load('x.npy'))[0]#0.01
+  N  = len(np.load('x.npy')); print('N=',N)  
+  dx = np.diff(np.load('x.npy'))[0]
 else:
   N  = 5000
   dx = 0.05
