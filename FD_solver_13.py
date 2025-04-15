@@ -1,6 +1,6 @@
-## THIS SCRIPT IMPLEMENTS AN IMPLICIT SOLVER FOR THE HEAT EQUATION 
-## WITH NEUMANN BOUNDARY CONDITIONS
-## CF. https://math.stackexchange.com/questions/2706701/neumann-boundary-conditions-in-finite-difference
+## THIS SCRIPT IMPLEMENTS A SEMI-IMPLICIT FD SOLVER FOR THE NONLINEAR DIFFUSION EQUATION WITH TWO OPTIONS FOR THE BOUNDARY CONDITIONS
+## EITHER NATURAL (u'=u'''=0 on boundary) OR Dirichlet + Neumann (NOT NATURAL, since <k> not conserved by diffusive terms)
+## For an example of implicit FD solver https://math.stackexchange.com/questions/2706701/neumann-boundary-conditions-in-finite-difference
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -69,9 +69,9 @@ if BC == '13':
   M[0,0]     = 0;  M[0,:4]   += np.array([-1, 3, -3, 1])
   M[-1,-1]   = 0;  M[-1,-4:] += np.array([-1, 3, -3, 1])
 
-elif BC == '12':
-  M[0,0]     = 0;  M[0,:3]   += np.array([1, -2, 1])
-  M[-1,-1]   = 0;  M[-1,-3:] += np.array([1, -2, 1])
+#elif BC == '12':
+#  M[0,0]     = 0;  M[0,:3]   += np.array([1, -2, 1])
+#  M[-1,-1]   = 0;  M[-1,-3:] += np.array([1, -2, 1])
 ##########################################
 #print(M)
 
@@ -80,10 +80,10 @@ M_inv = np.linalg.inv(M)
 print('Inverting matrix took ',time.time()-ts,' s')
 
 #CADENCE FOR PLOTTING
-cadence = 100
+cadence = 10
+plot_while_running = True
 
 #PLOT INITIAL CONDITION TO CHECK
-#plt.plot(x,u); plt.show()
 us = np.zeros((len(x),Nt//cadence)); print(np.shape(us))
 
 for n in range(Nt):
@@ -105,17 +105,11 @@ for n in range(Nt):
    NL[0:2]     = 0
    NL[-2:]     = 0
 
-   #if BC == '13': 
-       #print('flux left',  (u[1]   - u[0])/dx * (1-3*u[0]**2) /(1-u[0]**2)  - (-u[0]   + 3*u[1] - 3*u[2]  + u[3])  / dx**3)
-       #print('flux right', (u[-1] - u[-2])/dx * (1-3*u[-1]**2)/(1-u[-1]**2) - (-u[-4]  + 3*u[-3]- 3*u[-2] + u[-1]) / dx**3)
-       #print('d3kdx3 right', )
-       #print('d3k/dx3 left ', -u[0]  + 3*u[1] - 3*u[2]  + u[3])
-       #print('d3k/dx3 right ',-u[-4] + 3*u[-3] - 3*u[-2] + u[-1]) 
    b += NL
 
    #IMPLICIT TIME STEP
-   u = M_inv.dot(b)
-   #u = scipy.sparse.linalg.spsolve(M,b)
+   u = M_inv.dot(b)                      #THIS IS SIGNIFICANTLY FASTER IF M STAYS CONSTANT  
+   #u = scipy.sparse.linalg.spsolve(M,b) #THIS IS SIGNIFICANTLY SLOWER IF M STAYS CONSTANT
 
    #PLOT AND SAVE RESULT
    if n % cadence ==0:
@@ -123,8 +117,9 @@ for n in range(Nt):
      us[:,n//cadence] = u
      print('<k>=',np.mean(u),'<k^2>=',np.mean(u**2))
      
-     plt.clf(); plt.ylim(u[0]-0.1,u[-1]+0.1); plt.plot(x,u); plt.xlabel('$x$'); plt.ylabel('$Q$'); plt.pause(0.01)
+     if plot_while_running:
+        plt.clf(); plt.ylim(u[0]-0.1,u[-1]+0.1); plt.plot(x,u); plt.xlabel('$x$'); plt.ylabel('$Q$'); plt.pause(0.01)
 
-#np.save('us.npy',us)
+np.save('us.npy',us)
 
 plt.clf(); plt.pcolormesh(x,dt*np.arange(Nt//cadence),np.transpose(us)); plt.show()
