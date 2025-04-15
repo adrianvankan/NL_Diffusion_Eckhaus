@@ -15,7 +15,7 @@ if load_ic:
   dx = np.diff(np.load('x.npy'))[0]
 else:
   N  = 5000
-  dx = 0.05
+  dx = 0.05  #BEWARE: do not make dx too small or d/dt<k> due to diffusive terms does not vanish!
 x  = np.linspace(0,N*dx,N)
 
 Nt = 40000
