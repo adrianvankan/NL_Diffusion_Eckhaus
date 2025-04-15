@@ -33,9 +33,6 @@ if not load_ic: u = 0.3+0.25/2*(np.tanh(x-N/2*dx)+1)#np.exp(-(x-N/2*dx)**2)
 #initialize field with zero slope at boundaries
 u[0] = u[1]
 u[-2] = u[-1]
-if BC == '12':
-  u[0:3] = u[0]
-  u[-3:] = u[-1]
 if BC == '13':
   u[0:4] = u[0]
   u[-4:] = u[-1]
