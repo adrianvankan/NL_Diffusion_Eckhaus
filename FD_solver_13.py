@@ -8,27 +8,32 @@ import time
 import scipy.sparse
 import scipy.sparse.linalg
 
-load_ic = False #switch to True to load saved ic
+load_ic = True #switch to True to load saved ic
 
 if load_ic:
   N  = len(np.load('x.npy')); print('N=',N)  
   dx = np.diff(np.load('x.npy'))[0]
 else:
-  N  = 5000
-  dx = 0.05  #BEWARE: do not make dx too small or d/dt<k> due to diffusive terms does not vanish!
+  N  = 1000  #Number of grid points
+  dx = 0.05  #Space increment BEWARE: do not make dx too small or d/dt<k> due to diffusive terms does not vanish!
 x  = np.linspace(0,N*dx,N)
 
-Nt = 40000
-dt = 0.2
+Nt = 40000  #Number of timesteps
+dt = 0.0025 #Time increment
 
-BC = '13' #choose '01' (k=fixed, k'=0 at boundaries) or '13' (k'=k'''=0 at boundaries)
+BC = '13'   #choice of BCs: '01' (k=fixed, k'=0 at boundaries) or '13' (k'=k'''=0 at boundaries)
 
-#coefficient of advection term
-c_nl = 0
+Dh   = 1   #hypverviscosity coefficient
+c_nl = 0    #coefficient of advection term
 
 #INITIAL CONDITION
 if load_ic:     u = np.load('Q.npy')
-if not load_ic: u = 0.3+0.25/2*(np.tanh(x-N/2*dx)+1)#np.exp(-(x-N/2*dx)**2)
+if not load_ic: 
+    u0 = 0.4
+    du = 0.1
+    u  = u0 + du/2 * (1+np.tanh(x-x[-1]/2))
+    #u = 0.3 + 0.1/2*(np.tanh(x-N/2*dx)+1)#np.exp(-(x-N/2*dx)**2)
+    u = np.array(u,np.longdouble)
 
 #initialize field with zero slope at boundaries
 u[0] = u[1]
@@ -53,11 +58,11 @@ elif BC == '13':
 M = np.diag(np.ones(N)) 
 
 for i in range(2,N-2):
-    M[i,i-2] +=  1*dt/dx**4
-    M[i,i-1] += -4*dt/dx**4
-    M[i,i]   +=  6*dt/dx**4
-    M[i,i+1] += -4*dt/dx**4
-    M[i,i+2] +=  1*dt/dx**4
+    M[i,i-2] +=  1*dt/dx**4*Dh
+    M[i,i-1] += -4*dt/dx**4*Dh
+    M[i,i]   +=  6*dt/dx**4*Dh
+    M[i,i+1] += -4*dt/dx**4*Dh
+    M[i,i+2] +=  1*dt/dx**4*Dh
 
 M[ 1, 2]  += -1
 M[-2,-3]  += -1
@@ -73,7 +78,7 @@ M_inv = np.linalg.inv(M)
 print('Inverting matrix took ',time.time()-ts,' s')
 
 #CADENCE FOR PLOTTING
-cadence = 10
+cadence = 1
 plot_while_running = True
 
 #PLOT INITIAL CONDITION TO CHECK
@@ -94,7 +99,7 @@ for n in range(Nt):
    dudx[0:2]   = 0
    dudx[-2:]   = 0
    NL_flux     = (1-3*u**2)/(1-u**2)*dudx 
-   NL          = dt*np.gradient(NL_flux)/dx + dt*u*dudx*c_nl
+   NL          = dt*np.gradient(NL_flux)/dx + dt*u*dudx*c_nl #- dt*(c_nl*(2*u0+du)/2)*dudx
    NL[0:2]     = 0
    NL[-2:]     = 0
 
@@ -102,7 +107,7 @@ for n in range(Nt):
 
    #IMPLICIT TIME STEP
    u = M_inv.dot(b)                      #THIS IS SIGNIFICANTLY FASTER IF M STAYS CONSTANT  
-   #u = scipy.sparse.linalg.spsolve(M,b) #THIS IS SIGNIFICANTLY SLOWER IF M STAYS CONSTANT
+   #u = scipy.sparse.linalg.spsolve(M,b) #IGNORE THIS: IT IS SLOWER PROVIDED M_inv is always the same
 
    #PLOT AND SAVE RESULT
    if n % cadence ==0:
@@ -111,7 +116,7 @@ for n in range(Nt):
      print('<k>=',np.mean(u),'<k^2>=',np.mean(u**2))
      
      if plot_while_running:
-        plt.clf(); plt.ylim(u[0]-0.1,u[-1]+0.1); plt.plot(x,u); plt.xlabel('$x$'); plt.ylabel('$Q$'); plt.pause(0.01)
+        plt.clf(); plt.ylim(0,1); plt.plot(x,u); plt.xlabel('$x$'); plt.ylabel('$Q$'); plt.pause(0.01)
 
 np.save('us.npy',us)
 
