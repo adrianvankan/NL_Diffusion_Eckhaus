@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # Parameters
 N = 192       #resolution: number of Chebyshev polynomials
 Lx = 10.      #domain size in \eta
-c = (1-1/np.sqrt(3)) #constant in BC
+c = 1         #constant in BC
 ncc_cutoff = 1e-5    #numerical constant
 restart = True       #restart from specified initial guess
 tolerance = 3e-9     
@@ -50,8 +50,7 @@ coeff['g'] = x
 
 # Problem
 problem = d3.NLBVP([u,tau1,tau2,tau3,tau4],namespace=locals())
-#problem.add_equation("2*u+4*dx(dx(dx(dx(u))))=coeff*dx(u)-2*dx(dx(u))/u + 2*(dx(u)/u)**2") 
-problem.add_equation("tau1*p1 + tau2*p2 + tau3*p3 + tau4*p4 = -2*u**3 - 4*u**2*dx(dx(dx(dx(u)))) + coeff*u**2*dx(u) - 4*u*dx(dx(u)) + 4*dx(u)**2")
+problem.add_equation("tau1*p1 + tau2*p2 + tau3*p3 + tau4*p4 = -2*u**3 - 4*u**2*dx(dx(dx(dx(u)))) + coeff*u**2*dx(u) + 4*u*dx(dx(u)) - 4*dx(u)**2")
 problem.add_equation("dx(u)(x=0) = 0")
 problem.add_equation("dx(dx(dx(u)))(x=0)  = 0")
 problem.add_equation("u(x=Lx) = c*Lx**2")
