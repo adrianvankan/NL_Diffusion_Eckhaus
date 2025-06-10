@@ -28,9 +28,9 @@ plotting = True
 
 logger = logging.getLogger(__name__)
 direc = './'
-fn    = ''  #'nonmon_front_clean'#'two_pulse'#'single_pulse_045'
-Qold  = np.load(direc+'Q_'+fn+'.npy')
-xold  = np.load(direc+'x_'+fn+'.npy'); xold-= xold[0]
+fn    = ''  #'_nonmon_front_clean'#'_two_pulse'#'_single_pulse_045'
+Qold  = np.load(direc+'Q'+fn+'.npy')
+xold  = np.load(direc+'x'+fn+'.npy'); xold-= xold[0]
 if plotting: plt.plot(xold,Qold); plt.title('background_state'); plt.show()
 
 # Parameters
