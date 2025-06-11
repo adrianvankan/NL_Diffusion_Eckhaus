@@ -96,7 +96,7 @@ problem.add_equation("dx(dx(dx(u)))(x=Lx) = 0")
 
 # Solve
 solver = problem.build_solver()
-solver.solve_dense(solver.subpro
+solver.solve_dense(solver.subproblems[0])
 ##################################
 # Check analytical result for constant coefficients
 #print(np.sort_complex(np.sort(solver.eigenvalues))/np.pi**4)
